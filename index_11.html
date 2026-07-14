@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tavo · Image Setup</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0d;
+  --s1:#111118;
+  --s2:#1a1824;
+  --s3:#221e30;
+  --border:rgba(168,85,247,0.12);
+  --border2:rgba(168,85,247,0.25);
+  --purple:#a855f7;
+  --pink:#ec4899;
+  --purple-dim:rgba(168,85,247,0.12);
+  --pink-dim:rgba(236,72,153,0.1);
+  --text:#f0e6ff;
+  --text2:#9d8fc4;
+  --text3:#5a4f72;
+  --ok:#34d399;
+  --ok-dim:rgba(52,211,153,0.1);
+  --grad:linear-gradient(135deg,#a855f7,#ec4899);
+}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-weight:400;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 80% 0%,rgba(168,85,247,0.06) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 10% 90%,rgba(236,72,153,0.05) 0%,transparent 60%);pointer-events:none;z-index:0;}
+.header{position:sticky;top:0;z-index:100;background:rgba(10,10,13,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.02em;}
+.header-links{display:flex;gap:4px;}
+.hlink{padding:5px 10px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text3);font-size:10px;font-weight:500;text-decoration:none;transition:all 0.15s;white-space:nowrap;}
+.hlink:hover{border-color:var(--border2);color:var(--purple);}
+.wrap{position:relative;z-index:1;padding:24px 16px 80px;max-width:520px;margin:0 auto;}
+.hero{text-align:center;margin-bottom:32px;padding-top:8px;}
+.hero-eyebrow{font-family:'Unbounded',sans-serif;font-size:9px;font-weight:300;letter-spacing:0.3em;text-transform:uppercase;color:var(--purple);margin-bottom:12px;opacity:0.8;}
+.hero-title{font-family:'Unbounded',sans-serif;font-size:24px;font-weight:700;line-height:1.15;letter-spacing:-0.03em;margin-bottom:8px;}
+.hero-title span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-size:13px;color:var(--text2);line-height:1.6;}
+.steps{display:flex;gap:0;margin-bottom:28px;position:relative;}
+.steps::before{content:'';position:absolute;top:14px;left:14px;right:14px;height:1px;background:linear-gradient(90deg,var(--border),rgba(168,85,247,0.2),var(--border));}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;z-index:1;}
+.step-dot{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border);background:var(--s1);display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-size:10px;font-weight:600;color:var(--text3);transition:all 0.3s;}
+.step.active .step-dot{border-color:var(--purple);background:var(--purple-dim);color:var(--purple);box-shadow:0 0 12px rgba(168,85,247,0.3);}
+.step.done .step-dot{border-color:var(--ok);background:var(--ok-dim);color:var(--ok);}
+.step-label{font-size:9px;color:var(--text3);text-align:center;font-weight:500;text-transform:uppercase;letter-spacing:0.05em;}
+.step.active .step-label{color:var(--purple);}
+.step.done .step-label{color:var(--ok);}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:10px;transition:border-color 0.2s;}
+.card.active{border-color:var(--border2);}
+.card-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-head-left{display:flex;align-items:center;gap:10px;}
+.card-icon{width:32px;height:32px;border-radius:10px;background:var(--purple-dim);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.card-title{font-family:'Unbounded',sans-serif;font-size:11px;font-weight:600;color:var(--text);}
+.card-desc{font-size:10px;color:var(--text3);margin-top:1px;}
+.card-edit{font-size:10px;color:var(--text3);background:none;border:1px solid var(--border);border-radius:8px;padding:4px 10px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;}
+.card-edit:hover{border-color:var(--border2);color:var(--purple);}
+.card-body{padding:16px;}
+.provider-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.provider-btn{padding:12px 8px;border-radius:12px;border:1.5px solid var(--border);background:transparent;cursor:pointer;text-align:center;transition:all 0.2s;position:relative;overflow:hidden;}
+.provider-btn::before{content:'';position:absolute;inset:0;background:var(--grad);opacity:0;transition:opacity 0.2s;}
+.provider-btn.active{border-color:transparent;}
+.provider-btn.active::before{opacity:0.12;}
+.provider-btn.active .p-name{color:var(--text);}
+.p-name{font-family:'Unbounded',sans-serif;font-size:11px;font-weight:600;color:var(--text3);position:relative;transition:color 0.2s;}
+.p-hint{font-size:9px;color:var(--text3);margin-top:2px;position:relative;}
+.p-link{font-size:9px;color:var(--purple);text-decoration:none;position:relative;}
+.p-link:hover{text-decoration:underline;}
+.field{margin-bottom:12px;}
+.field-label{font-size:10px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between;}
+.field-label a{font-size:9px;color:var(--purple);text-decoration:none;text-transform:none;letter-spacing:0;}
+.field-label a:hover{text-decoration:underline;}
+.field-input{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:border-color 0.2s;}
+.field-input:focus{border-color:var(--border2);}
+.field-input::placeholder{color:var(--text3);}
+.field-hint{font-size:10px;color:var(--text3);margin-top:4px;line-height:1.4;}
+.enc-badge{background:var(--ok-dim);border:1px solid rgba(52,211,153,0.2);border-radius:10px;padding:8px 12px;margin-top:8px;display:flex;align-items:center;gap:8px;}
+.enc-label{font-size:9px;font-weight:600;color:var(--ok);text-transform:uppercase;letter-spacing:0.1em;}
+.enc-val{font-size:10px;color:var(--text3);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
+.refs-zone{border:1.5px dashed var(--border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:10px;}
+.refs-zone:hover{border-color:var(--border2);background:var(--purple-dim);}
+.refs-zone-icon{font-size:22px;margin-bottom:6px;}
+.refs-zone-text{font-size:12px;color:var(--text2);}
+.refs-zone-hint{font-size:10px;color:var(--text3);margin-top:3px;}
+.ref-card{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.ref-thumb{width:38px;height:38px;border-radius:8px;object-fit:cover;background:var(--s3);flex-shrink:0;border:1px solid var(--border);}
+.ref-info{flex:1;min-width:0;}
+.ref-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px;}
+.ref-url{font-size:9px;color:var(--ok);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ref-url.loading{color:var(--text3);}
+.ref-actions{display:flex;gap:4px;flex-shrink:0;}
+.ref-btn{width:26px;height:26px;border-radius:7px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:all 0.15s;}
+.ref-btn:hover{border-color:var(--border2);color:var(--purple);}
+.ref-btn.del:hover{border-color:rgba(239,68,68,0.4);color:#f87171;}
+.ref-name-input{background:var(--s3);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-family:'Inter',sans-serif;font-size:11px;outline:none;width:100%;margin-top:4px;}
+.ref-name-input:focus{border-color:var(--border2);}
+.sel-label{font-size:10px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;}
+.sel-label a{font-size:9px;color:var(--purple);text-decoration:none;text-transform:none;letter-spacing:0;}
+.sel-wrap{position:relative;margin-bottom:12px;}
+.sel-wrap::after{content:'▾';position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;font-size:11px;}
+.sel{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:10px 32px 10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:12px;outline:none;appearance:none;cursor:pointer;}
+.sel:focus{border-color:var(--border2);}
+.prompt-box{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px;font-size:11px;color:var(--text2);line-height:1.7;font-family:monospace;white-space:pre-wrap;word-break:break-all;max-height:220px;overflow-y:auto;margin-bottom:10px;}
+.out-tabs{display:flex;gap:6px;margin-bottom:10px;}
+.out-tab{flex:1;padding:8px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text3);font-family:'Unbounded',sans-serif;font-size:10px;font-weight:600;cursor:pointer;transition:all 0.15s;}
+.out-tab.active{background:var(--purple-dim);border-color:var(--border2);color:var(--purple);}
+.out-hint{font-size:10px;color:var(--text3);margin-bottom:8px;line-height:1.4;}
+.pk{color:var(--purple);}
+.pv{color:var(--ok);}
+.btn{width:100%;padding:14px;border-radius:12px;border:none;font-family:'Unbounded',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;letter-spacing:0.02em;margin-bottom:8px;position:relative;overflow:hidden;}
+.btn:last-child{margin-bottom:0;}
+.btn-primary{background:var(--grad);color:#fff;}
+.btn-primary:hover{opacity:0.9;transform:translateY(-1px);}
+.btn-primary::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.1),transparent);pointer-events:none;}
+.btn-copy{background:var(--ok-dim);color:var(--ok);border:1px solid rgba(52,211,153,0.25);}
+.btn-copy:hover{background:rgba(52,211,153,0.15);}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--text2);}
+.btn-ghost:hover{border-color:var(--border2);color:var(--purple);}
+.notice{background:rgba(168,85,247,0.08);border:1px solid var(--border2);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--purple);line-height:1.5;margin-bottom:12px;}
+.resources{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:10px;}
+.res-title{font-family:'Unbounded',sans-serif;font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:12px;}
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.res-item{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:10px;text-decoration:none;transition:all 0.15s;display:block;}
+.res-item:hover{border-color:var(--border2);}
+.res-icon{font-size:16px;margin-bottom:4px;}
+.res-name{font-size:11px;font-weight:500;color:var(--text);}
+.res-desc{font-size:9px;color:var(--text3);margin-top:2px;}
+.footer{text-align:center;padding:24px 16px;font-size:10px;color:var(--text3);line-height:1.6;}
+.footer a{color:var(--purple);text-decoration:none;}
+@keyframes pulse-grad{0%,100%{box-shadow:0 0 0 0 rgba(168,85,247,0.4)}50%{box-shadow:0 0 0 8px rgba(168,85,247,0)}}
+.btn-primary.ready{animation:pulse-grad 2s ease infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block;margin-right:6px;vertical-align:middle;}
+input[type=file]{display:none;}
+.theme-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
+.theme-btn{padding:10px 6px;border-radius:12px;border:1.5px solid var(--border);background:transparent;cursor:pointer;text-align:center;transition:all 0.2s;position:relative;overflow:hidden;}
+.theme-btn.active{border-color:var(--border2);}
+.theme-btn.active::before{content:'';position:absolute;inset:0;background:var(--grad);opacity:0.12;pointer-events:none;}
+.theme-swatch{height:24px;border-radius:7px;margin-bottom:6px;border:1px solid var(--border);position:relative;z-index:1;}
+.theme-name{font-size:10px;color:var(--text2);font-weight:500;position:relative;z-index:1;}
+.theme-btn.active .theme-name{color:var(--text);}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">✦ tavo images</div>
+  <div class="header-links">
+    <a class="hlink" href="https://linkapi.ai" target="_blank">LinkAPI</a>
+    <a class="hlink" href="https://riftai.su" target="_blank">RiftAI</a>
+    <a class="hlink" href="https://imgbb.com" target="_blank">ImgBB</a>
+  </div>
+</div>
+<div class="wrap">
+  <div class="hero">
+    <div class="hero-eyebrow">генерация картинок</div>
+    <div class="hero-title">Настройка<br><span>за 4 шага</span></div>
+    <div class="hero-sub">Заполни форму — получи готовый промт для Tavo</div>
+  </div>
+  <div class="steps" id="steps-bar">
+    <div class="step active" id="step-1"><div class="step-dot">1</div><div class="step-label">Ключи</div></div>
+    <div class="step" id="step-2"><div class="step-dot">2</div><div class="step-label">Рефы</div></div>
+    <div class="step" id="step-3"><div class="step-dot">3</div><div class="step-label">Настройки</div></div>
+    <div class="step" id="step-4"><div class="step-dot">4</div><div class="step-label">Промт</div></div>
+  </div>
+  <div class="card active" id="card-1">
+    <div class="card-head">
+      <div class="card-head-left">
+        <div class="card-icon">🔑</div>
+        <div><div class="card-title">API-ключи</div><div class="card-desc">LinkAPI или RiftAI + ImgBB</div></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div id="restore-note" style="display:none;background:var(--ok-dim);border:1px solid var(--ok);border-radius:10px;padding:10px;margin-bottom:12px;font-size:11px;color:var(--ok);">✓ Твои настройки восстановлены (стиль, модель, рефы, userId). Ключи нужно ввести заново — их мы не храним.</div>
+      <div class="provider-grid">
+        <button class="provider-btn active" id="prov-link" onclick="selectProvider('link')">
+          <div class="p-name">LinkAPI</div>
+          <div class="p-hint">linkapi.ai</div>
+        </button>
+        <button class="provider-btn" id="prov-rift" onclick="selectProvider('rift')">
+          <div class="p-name">RiftAI</div>
+          <div class="p-hint">riftai.su</div>
+        </button>
+      </div>
+      <div class="field">
+        <div class="field-label">API-ключ <a href="https://linkapi.ai" target="_blank" id="api-link">linkapi.ai →</a></div>
+        <input class="field-input" type="password" id="api-key" placeholder="sk-...">
+        <div class="field-hint" id="api-hint">Личный кабинет → API Keys</div>
+      </div>
+      <div class="field">
+        <div class="field-label">ImgBB Key <a href="https://api.imgbb.com" target="_blank">api.imgbb.com →</a></div>
+        <input class="field-input" type="password" id="imgbb-key" placeholder="Ключ ImgBB">
+        <div class="field-hint">imgbb.com → Настройки → API</div>
+      </div>
+      <div class="enc-badge" id="enc-badge" style="display:none">
+        <div class="enc-label">✓ зашифровано</div>
+        <div class="enc-val" id="enc-val"></div>
+      </div>
+      <div style="height:12px"></div>
+      <button class="btn btn-primary" onclick="encryptKeys()">Зашифровать и продолжить →</button>
+    </div>
+  </div>
+  <div class="card" id="card-2" style="opacity:0.5;pointer-events:none">
+    <div class="card-head">
+      <div class="card-head-left">
+        <div class="card-icon">🖼️</div>
+        <div><div class="card-title">Референсы персонажей</div><div class="card-desc">Фото → автоматически на ImgBB</div></div>
+      </div>
+      <button class="card-edit" onclick="addRef()">+ Добавить</button>
+    </div>
+    <div class="card-body">
+      <div class="notice">Загрузи фото персонажей (ссылка создастся сама) ИЛИ вставь готовую прямую ссылку с ImgBB.</div>
+      <div id="refs-list"></div>
+      <div class="refs-zone" onclick="document.getElementById('file-input').click()">
+        <div class="refs-zone-icon">＋</div>
+        <div class="refs-zone-text">Нажми чтобы загрузить фото</div>
+        <div class="refs-zone-hint">JPG, PNG, WEBP · до 32 МБ</div>
+      </div>
+      <input type="file" id="file-input" accept="image/*" onchange="handleFile(this)">
+
+      <div style="display:flex;align-items:center;gap:8px;margin:10px 0;">
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+        <div style="font-size:10px;color:var(--text3);">или</div>
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
+      <div class="field">
+        <div class="field-label">Прямая ссылка ImgBB</div>
+        <input class="field-input" type="text" id="ref-url" placeholder="https://i.ibb.co/.../file.jpg" autocomplete="off">
+        <div class="field-hint">Прямая ссылка на файл (i.ibb.co/...), а не на страницу</div>
+        <div style="height:6px"></div>
+        <input class="field-input" type="text" id="ref-url-name" placeholder="Имя персонажа" autocomplete="off" onkeydown="if(event.key==='Enter')addRefByUrl()">
+        <div style="height:8px"></div>
+        <button class="btn btn-primary" onclick="addRefByUrl()">Добавить по ссылке →</button>
+      </div>
+
+      <div class="field" id="name-field" style="display:none">
+        <div class="field-label">Имя персонажа</div>
+        <input class="field-input" type="text" id="char-name" placeholder="Например: Yoruichi" onkeydown="if(event.key==='Enter')confirmRef()">
+        <div style="height:8px"></div>
+        <button class="btn btn-primary" onclick="confirmRef()">Добавить →</button>
+      </div>
+      <div style="height:4px"></div>
+      <button class="btn btn-ghost" id="refs-next" onclick="goToStep(3)" style="display:none">Продолжить →</button>
+    </div>
+  </div>
+  <div class="card" id="card-3" style="opacity:0.5;pointer-events:none">
+    <div class="card-head">
+      <div class="card-head-left">
+        <div class="card-icon">⚙️</div>
+        <div><div class="card-title">Настройки генерации</div><div class="card-desc">Модель, стиль, твой ID</div></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="sel-label">Модель <a href="https://riftai.su/models" target="_blank">все модели →</a></div>
+      <div class="sel-wrap">
+        <select class="sel" id="model-sel"></select>
+      </div>
+      <div class="sel-label">Стиль <a href="https://wewwaistyping.github.io/slayimagespromts/" target="_blank">все стили →</a></div>
+      <div style="position:relative;margin-bottom:12px;">
+        <input class="field-input" type="text" id="style-search" placeholder="🔍 Поиск стиля… (149 доступно)" autocomplete="off" onfocus="openStyleList()" oninput="filterStyles()">
+        <input type="hidden" id="style-sel" value="kodak_portra_400">
+        <div id="style-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:50;margin-top:4px;background:var(--s2);border:1px solid var(--border2);border-radius:10px;max-height:280px;overflow-y:auto;box-shadow:0 12px 32px rgba(0,0,0,0.5);"></div>
+      </div>
+      <div class="sel-label">Тема рамки картинки</div>
+      <div class="theme-grid">
+        <button class="theme-btn active" id="theme-dark" onclick="selectTheme('dark')">
+          <div class="theme-swatch" style="background:linear-gradient(160deg,#14121c,#0a0a0d);"></div>
+          <div class="theme-name">Тёмная</div>
+        </button>
+        <button class="theme-btn" id="theme-white" onclick="selectTheme('white')">
+          <div class="theme-swatch" style="background:linear-gradient(160deg,#ffffff,#f1eafb);"></div>
+          <div class="theme-name">Белая</div>
+        </button>
+        <button class="theme-btn" id="theme-glass" onclick="selectTheme('glass')">
+          <div class="theme-swatch" style="background:linear-gradient(160deg,rgba(190,170,230,0.45),rgba(120,100,160,0.25));"></div>
+          <div class="theme-name">Стекло</div>
+        </button>
+      </div>
+      <div class="field">
+        <div class="field-label">Твой ID <span style="font-size:9px;color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0">для кэша картинок</span></div>
+        <input class="field-input" type="text" id="user-id" placeholder="Любой никнейм · минимум 5 символов">
+        <div class="field-hint">Картинки с одинаковым промтом будут кэшироваться и не тратить кредиты</div>
+      </div>
+      <button class="btn btn-primary" onclick="generatePrompt()">Сгенерировать промт →</button>
+    </div>
+  </div>
+  <div class="card" id="card-4" style="opacity:0.5;pointer-events:none">
+    <div class="card-head">
+      <div class="card-head-left">
+        <div class="card-icon">📋</div>
+        <div><div class="card-title">Готовый промт</div><div class="card-desc">Скопируй и вставь в Tavo</div></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="notice">⚠️ Нужны ВСЕ ТРИ блока: промт (в карточку персонажа или Tavo-промт) и оба регекса (Regex → Import для каждого). Не забудь выключить стриминг: More → Settings → Stream Text → выкл.</div>
+      <div class="out-tabs">
+        <button class="out-tab active" id="tab-prompt" onclick="switchOut('prompt')">1 · Промт</button>
+        <button class="out-tab" id="tab-regex" onclick="switchOut('regex')">2 · Картинка</button>
+        <button class="out-tab" id="tab-cmdregex" onclick="switchOut('cmdregex')">3 · Команды</button>
+      </div>
+      <button class="btn btn-copy ready" id="download-both-zip-btn" onclick="downloadBothZip()" style="display:none;margin-bottom:12px;">⬇ Скачать оба регекса (.zip)</button>
+      <div id="out-prompt">
+        <div class="out-hint">Скопируй и вставь в описание персонажа (или в Tavo-промт)</div>
+        <div class="prompt-box" id="prompt-box">Заполни шаги 1–3</div>
+        <button class="btn btn-copy ready" id="copy-btn" onclick="copyPrompt()" style="display:none">📋 Скопировать промт</button>
+      </div>
+      <div id="out-regex" style="display:none">
+        <div class="out-hint">Импортируй в Tavo: Regex → Import. Разворачивает маркер [IMG] в картинку.</div>
+        <div class="prompt-box" id="regex-box">Заполни шаги 1–3</div>
+        <button class="btn btn-copy ready" id="download-regex-btn" onclick="downloadRegex()" style="display:none">⬇ Скачать .json (для Import в Tavo)</button>
+        <button class="btn btn-ghost" id="copy-regex-btn" onclick="copyRegex()" style="display:none;margin-top:6px">📋 Или скопировать текст</button>
+      </div>
+      <div id="out-cmdregex" style="display:none">
+        <div class="out-hint">Импортируй в Tavo: Regex → Import. Ловит команды [OUTFIT ...] / [HAIR ...] / [BG: ...] и сохраняет их в память чата.</div>
+        <div class="prompt-box" id="cmd-regex-box">Заполни шаги 1–3</div>
+        <button class="btn btn-copy ready" id="download-cmd-regex-btn" onclick="downloadCmdRegex()" style="display:none">⬇ Скачать .json (для Import в Tavo)</button>
+        <button class="btn btn-ghost" id="copy-cmd-regex-btn" onclick="copyCmdRegex()" style="display:none;margin-top:6px">📋 Или скопировать текст</button>
+      </div>
+      <div style="background:var(--s2);border:1px solid var(--border2);border-radius:12px;padding:12px;margin-bottom:12px;">
+        <div style="font-size:11px;color:var(--text2);margin-bottom:8px;">✏️ Изменить что-то одно (остальное останется):</div>
+        <select class="sel" id="quick-edit-sel" onchange="quickEdit()">
+          <option value="">— выбери что изменить —</option>
+          <option value="keys">🔑 Ключи (DATA)</option>
+          <option value="refs">🖼 Референсы</option>
+          <option value="style">🎨 Стиль</option>
+          <option value="theme">🖼 Тема рамки</option>
+          <option value="model">🤖 Модель</option>
+          <option value="userId">👤 userId</option>
+          <option value="provider">🔁 Провайдер</option>
+        </select>
+        <div style="font-size:10px;color:var(--text3);margin-top:6px;">После изменения нажми «Сгенерировать» в шаге 3 — промт и регекс пересоберутся.</div>
+      </div>
+      <button class="btn btn-ghost" onclick="resetAll()" style="margin-top:4px">↩ Начать заново</button>
+    </div>
+  </div>
+  <div class="resources">
+    <div class="res-title">Ресурсы</div>
+    <div class="res-grid">
+      <a class="res-item" href="https://linkapi.ai" target="_blank"><div class="res-icon">🔗</div><div class="res-name">LinkAPI</div><div class="res-desc">Купить API-ключ</div></a>
+      <a class="res-item" href="https://riftai.su" target="_blank"><div class="res-icon">🌀</div><div class="res-name">RiftAI</div><div class="res-desc">Альтернативный провайдер</div></a>
+      <a class="res-item" href="https://imgbb.com" target="_blank"><div class="res-icon">🖼️</div><div class="res-name">ImgBB</div><div class="res-desc">Хостинг картинок</div></a>
+      <a class="res-item" href="https://wewwaistyping.github.io/slayimagespromts/" target="_blank"><div class="res-icon">🎨</div><div class="res-name">Стили</div><div class="res-desc">Список всех стилей</div></a>
+      <a class="res-item" href="https://docs.google.com/document/u/0/d/1F3Yo-8yoho0T-GO0ONYnSqMA2FB_wBUHxJaDXNcqO7o/mobilebasic" target="_blank"><div class="res-icon">📖</div><div class="res-name">Инструкция</div><div class="res-desc">Полное руководство</div></a>
+      <a class="res-item" href="https://linkapi-proxy-imgbb-key-cache.vercel.app/encrypt.html" target="_blank"><div class="res-icon">🔐</div><div class="res-name">Шифратор</div><div class="res-desc">Ручное шифрование</div></a>
+    </div>
+  </div>
+  <div class="footer">сделано с 🤍 для сообщества Tavo<br><a href="https://t.me/+3qj7eHn2WWQ5ZjNi" target="_blank">а мы тут иишками балуемся</a> · если что-то сломалось — загляни в инструкцию</div>
+</div>
+<script>
+const state = {
+  provider: 'link',
+  encryptedData: '',
+  refs: [],
+  pendingFile: null,
+  regexJson: '',
+  cmdRegexJson: '',
+  frameTheme: 'dark',
+  currentStep: 1
+};
+function selectProvider(p) {
+  state.provider = p;
+  document.getElementById('prov-link').classList.toggle('active', p==='link');
+  document.getElementById('prov-rift').classList.toggle('active', p==='rift');
+  document.getElementById('api-link').href = p==='link' ? 'https://linkapi.ai' : 'https://riftai.su';
+  document.getElementById('api-link').textContent = p==='link' ? 'linkapi.ai →' : 'riftai.su →';
+  if(typeof renderModels==='function') renderModels();
+  document.getElementById('api-hint').textContent = p==='link' ? 'Личный кабинет → API Keys' : 'Личный кабинет → API Keys';
+}
+const MASTER_KEY = '+KttdSbKJxIgDorFxEf9a3eHGYuH4h/OljxbkPBG3wk=';
+async function encryptData(obj, secretKeyBase64, isRift) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(JSON.stringify(obj));
+  const iv = crypto.getRandomValues(new Uint8Array(16));
+  const keyBuffer = Uint8Array.from(atob(secretKeyBase64), c => c.charCodeAt(0));
+  const cryptoKey = await crypto.subtle.importKey('raw', keyBuffer, 'AES-CBC', false, ['encrypt']);
+  const encrypted = await crypto.subtle.encrypt({ name: 'AES-CBC', iv }, cryptoKey, data);
+  const ivBase64 = btoa(String.fromCharCode(...iv));
+  const encBase64 = btoa(String.fromCharCode(...new Uint8Array(encrypted)));
+  if (isRift) {
+    const enc = s => s.replace(/\+/g,'%2B').replace(/\//g,'%2F').replace(/=/g,'%3D');
+    return `${enc(ivBase64)}--${enc(encBase64)}`;
+  }
+  return `${ivBase64}:${encBase64}`;
+}
+function sanitizeKey(k){
+  if(!k) return k;
+  return k
+    .replace(/[\u2010-\u2015\u2212]/g,'-')       // тире/минусы → дефис
+    .replace(/[\u2018\u2019\u201C\u201D]/g,'')    // умные кавычки → убрать
+    .replace(/[\u00A0\u2000-\u200B]/g,'')         // неразрывные пробелы → убрать
+    .replace(/[^\x00-\x7F]/g,'')                  // прочий non-ASCII → убрать
+    .trim();
+}
+async function encryptKeys() {
+  const apiKey = sanitizeKey(document.getElementById('api-key').value.trim());
+  const imgbbKey = sanitizeKey(document.getElementById('imgbb-key').value.trim());
+  if (!apiKey || !imgbbKey) { alert('Заполни оба поля'); return; }
+  try {
+    const encrypted = await encryptData({key: apiKey, imgbb_key: imgbbKey}, MASTER_KEY, state.provider==='rift');
+    state.encryptedData = encrypted;
+    document.getElementById('enc-val').textContent = encrypted.slice(0,60)+'…';
+    document.getElementById('enc-badge').style.display = 'flex';
+    goToStep(2);
+  } catch(e) { alert('Ошибка шифрования: '+e.message); }
+}
+let pendingFileData = null;
+function handleFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    pendingFileData = {base64: e.target.result, name: file.name};
+    document.getElementById('name-field').style.display = 'block';
+    document.getElementById('char-name').value = '';
+    document.getElementById('char-name').focus();
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+async function confirmRef() {
+  const name = document.getElementById('char-name').value.trim();
+  if (!name) { alert('Введи имя персонажа'); return; }
+  if (!pendingFileData) return;
+  const imgbbKey = sanitizeKey(document.getElementById('imgbb-key').value.trim());
+  if (!imgbbKey) { alert('Нужен ImgBB ключ'); return; }
+  const tempId = 'ref-'+Date.now();
+  const list = document.getElementById('refs-list');
+  list.insertAdjacentHTML('beforeend', `
+    <div class="ref-card" id="${tempId}">
+      <div class="ref-thumb" style="background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:18px;">⏳</div>
+      <div class="ref-info">
+        <div class="ref-name">${name}</div>
+        <div class="ref-url loading">загружаю на ImgBB…</div>
+      </div>
+    </div>`);
+  document.getElementById('name-field').style.display = 'none';
+  try {
+    const base64 = pendingFileData.base64.split(',')[1];
+    const form = new FormData();
+    form.append('key', imgbbKey);
+    form.append('image', base64);
+    form.append('name', name+'_'+Date.now());
+    const res = await fetch('https://api.imgbb.com/1/upload', {method:'POST', body:form});
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error?.message || 'ImgBB error');
+    const url = data.data.url;
+    state.refs.push({name, url});
+    pendingFileData = null;
+    const card = document.getElementById(tempId);
+    card.innerHTML = `
+      <img class="ref-thumb" src="${url}" onerror="this.style.background='var(--s3)'">
+      <div class="ref-info">
+        <div class="ref-name">${name}</div>
+        <div class="ref-url">✓ ${url.replace('https://','').slice(0,40)}…</div>
+      </div>
+      <div class="ref-actions">
+        <button class="ref-btn del" onclick="removeRef('${tempId}','${name}')" title="Удалить">✕</button>
+      </div>`;
+    document.getElementById('refs-next').style.display = 'block';
+  } catch(e) {
+    document.getElementById(tempId).remove();
+    alert('Ошибка загрузки: '+e.message);
+  }
+}
+function removeRef(cardId, name) {
+  document.getElementById(cardId)?.remove();
+  state.refs = state.refs.filter(r => r.name !== name);
+  if (state.refs.length === 0) document.getElementById('refs-next').style.display = 'none';
+}
+function addRef() {
+  document.getElementById('file-input').click();
+}
+function addRefByUrl() {
+  const url = document.getElementById('ref-url').value.trim();
+  const name = document.getElementById('ref-url-name').value.trim();
+  if (!name) { alert('Введи имя персонажа'); return; }
+  if (!url || !/^https?:\/\//.test(url)) { alert('Вставь корректную ссылку (https://...)'); return; }
+  // Предупреждаем если это страница ImgBB, а не прямая ссылка
+  if (/^https?:\/\/ibb\.co\//.test(url)) {
+    alert('Это ссылка на страницу ImgBB. Нужна прямая ссылка на файл — открой картинку, правой кнопкой «Копировать адрес изображения» (обычно i.ibb.co/...)');
+    return;
+  }
+  state.refs.push({name, url});
+  const list = document.getElementById('refs-list');
+  const tempId = 'ref-'+Date.now();
+  list.insertAdjacentHTML('beforeend', `
+    <div class="ref-card" id="${tempId}">
+      <img class="ref-thumb" src="${url}" onerror="this.style.background='var(--s3)'">
+      <div class="ref-info">
+        <div class="ref-name">${name}</div>
+        <div class="ref-url">✓ ${url.replace('https://','').slice(0,40)}…</div>
+      </div>
+      <div class="ref-actions">
+        <button class="ref-btn del" onclick="removeRef('${tempId}','${name.replace(/'/g,"\\'")}')" title="Удалить">✕</button>
+      </div>`);
+  document.getElementById('ref-url').value = '';
+  document.getElementById('ref-url-name').value = '';
+  document.getElementById('refs-next').style.display = 'block';
+}
+function generatePrompt() {
+  const userId = document.getElementById('user-id').value.trim();
+  if (!userId || userId.length < 3) { alert('Введи userId (минимум 3 символа)'); return; }
+  const model = document.getElementById('model-sel').value;
+  const style = document.getElementById('style-sel').value;
+  const isRift = state.provider === 'rift';
+  const baseUrl = isRift
+    ? 'https://proxy-rift-tavo.vercel.app/api/generate'
+    : 'https://linkapi-proxy-imgbb-key-cache.vercel.app/api/generate';
+
+  const charsRef = state.refs.length > 0
+    ? state.refs.map(r => `${r.name},${r.url}`).join(';')
+    : '(нет персонажей)';
+
+  // ── ПРОМТ: модель пишет [IMG]eng|rus|chars[/IMG] ──
+  const prompt = `=== IMAGE GENERATION (part of your reply) ===
+CHARACTERS (name,link separated by ;):
+${state.refs.map(r => `${r.name}, ${r.url}`).join('\n')}
+
+HOW IT WORKS:
+You write your reply as usual. Somewhere in the MIDDLE of your reply (after 1–2 paragraphs, not at the very start and not at the very end) you insert ONE image marker. The marker is replaced by a generated image automatically.
+
+THE MARKER has THREE parts separated by | :
+- PART 1: ONE English sentence describing the current scene for the image model, using ONLY character names.
+- PART 2: the SAME sentence in Russian (caption shown under the image).
+- PART 3: characters in scene as name,link;name,link
+Format:
+[IMG]English prompt|Русская подпись|${charsRef}[/IMG]
+
+EXAMPLE of a reply:
+Он притянул её ближе, и дождь застучал по крыше машины сильнее.
+[IMG]Mark and Sveta hug in a dim courtyard at night|Марк и Света обнимаются в тёмном дворе ночью|${charsRef}[/IMG]
+— Я не хочу, чтобы ты уезжала, — прошептал он.
+
+RULES:
+- Insert the marker in the MIDDLE of the reply, between paragraphs — NOT at the very beginning.
+- Use ONLY names — never "the man", "a girl", "мужчина", "девушка".
+- EXACTLY ONE [IMG]...[/IMG] in the whole reply. NEVER write two or more markers. NEVER repeat or vary the image.
+- Each person in PART 3 must match their reference link. Faces must match the references.
+- Do NOT write URLs, HTML or tags — only the marker. Everything else is automatic.
+
+=== LOCKED OUTFIT / HAIR / BACKGROUND (optional, part of your reply) ===
+A character's outfit, hairstyle, and the scene's background CAN be locked so every image stays consistent, until changed.
+
+To LOCK or CHANGE something, put ONE command on its own line anywhere in your reply (outside the [IMG] marker):
+[OUTFIT Name: short English description of the outfit]
+[HAIR Name: short English description of the hairstyle]
+[BG: short English description of the location/setting]
+
+To CLEAR a lock (so the scene decides again), use "reset":
+[OUTFIT Name: reset]
+[HAIR Name: reset]
+[BG: reset]
+
+RULES for these commands:
+- Only write a command when the outfit/hairstyle/background actually CHANGES in the story (a character gets dressed, changes clothes, cuts/styles hair, the scene moves somewhere new) — not in every reply.
+- If nothing changed, write NOTHING — do not repeat old commands.
+- Once locked, DO NOT re-describe that outfit/hairstyle/background in PART 1 of the [IMG] marker — it's added automatically. Only describe pose, action and expression there.
+- If the user sends you a photo and asks to change a character's outfit/hair/background to match it, DESCRIBE in English what you see in the photo and output the matching command(s) — this is how the change gets applied, since you cannot edit images directly.
+
+EXAMPLE (outfit change):
+Она скинула плащ и осталась в простом чёрном платье.
+[OUTFIT Sveta: simple black cocktail dress]
+[IMG]Sveta stands in the doorway|Света стоит в дверях|${charsRef}[/IMG]`;
+
+  // ── РЕГЕКС ──
+  const dataJs = state.encryptedData.replace(/\\/g,'\\\\').replace(/"/g,'\\"');
+  const th = FRAME_THEMES[state.frameTheme] || FRAME_THEMES.dark;
+  const regexHtml = `<div data-img="$1" style="max-width:680px;margin:20px auto;padding:18px;background:${th.cardBg};border:${th.cardBorder};border-radius:16px;box-shadow:${th.cardShadow};${th.cardExtra}">
+  <div style="position:relative;width:100%;border-radius:12px;overflow:hidden;background:${th.imgBg};min-height:120px;">
+    <div class="imld" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
+      <div style="width:38px;height:38px;border:3px solid rgba(168,85,247,0.15);border-top-color:#a855f7;border-right-color:#ec4899;border-radius:50%;animation:imsp 0.8s linear infinite;"></div>
+      <div style="font-size:12px;color:${th.loadText};letter-spacing:0.1em;">генерирую картинку…</div>
+    </div>
+    <style>@keyframes imsp{to{transform:rotate(360deg)}}</style>
+    <img class="imgt" style="width:100%;height:auto;display:block;border-radius:12px;opacity:0;transition:opacity 0.4s;position:relative;z-index:1;" onload="this.style.opacity=1;var l=this.parentNode.querySelector('.imld');if(l)l.style.display='none';" onerror="var l=this.parentNode.querySelector('.imld');if(l)l.innerHTML='<div style=\\'color:${th.err};font-size:13px;text-align:center;padding:20px\\'>не загрузилось — пролистай вверх-вниз</div>';">
+  </div>
+  <div class="imdesc" style="text-align:center;color:${th.caption};margin-top:14px;font-style:italic;font-size:13px;"></div>
+  <div class="imtoggle" style="text-align:center;margin-top:8px;cursor:pointer;color:${th.arrow};font-size:16px;line-height:1;user-select:none;transition:transform 0.2s;">˅</div>
+  <div class="imactions" style="display:none;margin-top:10px;">
+    <button class="imreroll" style="width:100%;padding:9px 0;background:${th.rerollBg};border:1px solid ${th.rerollBorder};border-radius:10px;color:${th.rerollText};font-size:12px;cursor:pointer;margin-bottom:8px;">🔄 Реролл</button>
+    <div class="imactrow" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+      <button class="imoutfit" style="padding:9px 0;background:${th.actBg};border:1px solid ${th.actBorder};border-radius:10px;color:${th.actText};font-size:12px;cursor:pointer;">👕 Одежда</button>
+      <button class="imbg" style="padding:9px 0;background:${th.actBg};border:1px solid ${th.actBorder};border-radius:10px;color:${th.actText};font-size:12px;cursor:pointer;">🖼 Фон</button>
+      <button class="imhair" style="padding:9px 0;background:${th.actBg};border:1px solid ${th.actBorder};border-radius:10px;color:${th.actText};font-size:12px;cursor:pointer;">💇 Причёска</button>
+    </div>
+    <div class="imhint" style="text-align:center;font-size:10px;color:${th.actText};opacity:0.7;margin-top:8px;">после изменений жми 🔄 Реролл выше, чтобы применить</div>
+    <div class="imeditor" style="display:none;margin-top:8px;">
+      <div class="imeditor-label" style="font-size:11px;color:${th.actText};margin-bottom:6px;"></div>
+      <div class="imeditor-chars" style="display:none;flex-wrap:wrap;gap:6px;margin-bottom:8px;"></div>
+      <div style="display:flex;gap:8px;">
+        <input class="imeditor-input" type="text" style="flex:1;min-width:0;padding:9px 10px;border-radius:10px;border:1px solid ${th.inputBorder};background:${th.inputBg};color:${th.inputText};font-size:13px;outline:none;box-sizing:border-box;">
+        <button class="imeditor-photo" title="Заполнить по фото" style="flex-shrink:0;padding:0 14px;border-radius:10px;border:1px solid ${th.actBorder};background:${th.actBg};color:${th.actText};font-size:14px;cursor:pointer;">📎</button>
+        <input class="imeditor-fileinput" type="file" accept="image/*" style="display:none;">
+      </div>
+      <div class="imeditor-status" style="display:none;font-size:11px;text-align:center;margin-top:8px;color:${th.actText};"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px;">
+        <button class="imeditor-ok" style="padding:9px 0;background:${th.okBg};border:1px solid ${th.okBorder};border-radius:10px;color:${th.okText};font-size:12px;cursor:pointer;">✓ Сохранить</button>
+        <button class="imeditor-clear" style="padding:9px 0;background:${th.rerollBg};border:1px solid ${th.rerollBorder};border-radius:10px;color:${th.rerollText};font-size:12px;cursor:pointer;">↺ Сброс</button>
+        <button class="imeditor-cancel" style="padding:9px 0;background:${th.actBg};border:1px solid ${th.actBorder};border-radius:10px;color:${th.actText};font-size:12px;cursor:pointer;">✕ Отмена</button>
+      </div>
+    </div>
+  </div>
+</div>
+<` + `script>
+(function(){
+  var boxes = document.querySelectorAll('div[data-img]');
+  var box = boxes[boxes.length-1];
+  if (!box || box.dataset.imgDone) return;
+  box.dataset.imgDone = '1';
+  var TAVO_DATA = "${dataJs}";
+  var raw = box.getAttribute('data-img') || '';
+  var parts = raw.split('|');
+  var engPrompt = (parts[0]||'').trim();
+  var rusCaption = (parts[1]||'').trim();
+  var charsStr = (parts[2]||'').trim();
+  if (!charsStr && parts.length===2) { charsStr = rusCaption; rusCaption = engPrompt; }
+  var chars = [];
+  if (charsStr && charsStr.indexOf('нет персонажей')<0) {
+    charsStr.split(';').forEach(function(p){
+      var i = p.lastIndexOf(',');
+      if (i>0) chars.push({name:p.slice(0,i).trim(), url:p.slice(i+1).trim()});
+    });
+  }
+  function normName(s){ return (s||'').trim().toLowerCase(); }
+  function loadSlot(key){
+    return new Promise(function(resolve){
+      try{
+        if (window.tavo && tavo.file && typeof tavo.file.load==='function'){
+          var v = tavo.file.load(key);
+          if (v && typeof v.then==='function'){
+            v.then(function(r){ resolve(r && String(r).trim() ? String(r).trim() : ''); })
+             .catch(function(){ resolve(''); });
+          } else {
+            resolve(v && String(v).trim() ? String(v).trim() : '');
+          }
+        } else resolve('');
+      }catch(e){ resolve(''); }
+    });
+  }
+  function saveSlot(key, val){
+    try{
+      if (window.tavo && tavo.file && typeof tavo.file.save==='function') tavo.file.save(key, val);
+    }catch(e){}
+  }
+  function deleteSlot(key){
+    try{
+      if (window.tavo && tavo.file && typeof tavo.file.delete==='function') tavo.file.delete(key);
+    }catch(e){}
+  }
+  function compressImage(file, cb){
+    var reader = new FileReader();
+    reader.onload = function(){
+      var img = new Image();
+      img.onload = function(){
+        var max = 1024;
+        var w = img.width, h = img.height;
+        if (w > h && w > max) { h = Math.round(h * max / w); w = max; }
+        else if (h >= w && h > max) { w = Math.round(w * max / h); h = max; }
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        cb(canvas.toDataURL('image/jpeg', 0.8));
+      };
+      img.onerror = function(){ cb(null); };
+      img.src = reader.result;
+    };
+    reader.onerror = function(){ cb(null); };
+    reader.readAsDataURL(file);
+  }
+  async function buildUrl(bust){
+    var extras = [];
+    for (var i=0;i<chars.length;i++){
+      var c = chars[i];
+      var outfit = await loadSlot('outfit_'+normName(c.name));
+      var hair = await loadSlot('hair_'+normName(c.name));
+      if (outfit) extras.push(c.name+' is wearing '+outfit);
+      if (hair) extras.push(c.name+"'s hairstyle: "+hair);
+    }
+    var bg = await loadSlot('background');
+    if (bg) extras.push('background/setting: '+bg);
+    var fullPrompt = engPrompt + (extras.length ? ('. '+extras.join('. ')+'.') : '');
+    return "${baseUrl}"
+      + '?data=' + encodeURIComponent("${dataJs}")
+      + '&characters=' + encodeURIComponent(JSON.stringify(chars))
+      + '&prompt=' + encodeURIComponent(fullPrompt)
+      + '&style=${style}'
+      + '&model=${model}'
+      + '&userId=${userId}'
+      + (bust ? '&_r=' + Date.now() : '');
+  }
+  var img = box.querySelector('.imgt');
+  box.querySelector('.imdesc').textContent = rusCaption || engPrompt;
+  setTimeout(function(){ buildUrl(false).then(function(u){ img.src = u; }); }, 50);
+  box.querySelector('.imreroll').onclick = function(){
+    var ok = true;
+    try{ if (window.confirm) ok = window.confirm('Точно внёс все изменения (одежда/причёска/фон)? Если ещё нет — сначала сохрани их, потом жми Реролл.'); }catch(e){}
+    if (!ok) return;
+    var b = this; b.textContent = '⏳ ждём…';
+    var l = box.querySelector('.imld'); if (l) l.style.display = 'flex';
+    img.style.opacity = '0';
+    img.onload = function(){ img.style.opacity='1'; if(l)l.style.display='none'; b.textContent='🔄 Реролл'; };
+    img.onerror = function(){ if(l)l.style.display='none'; b.textContent='🔄 Реролл'; };
+    buildUrl(true).then(function(u){ img.src = u; });
+  };
+  var actRow = box.querySelector('.imactrow');
+  var editor = box.querySelector('.imeditor');
+  var editorLabel = box.querySelector('.imeditor-label');
+  var editorChars = box.querySelector('.imeditor-chars');
+  var editorInput = box.querySelector('.imeditor-input');
+  var editorOk = box.querySelector('.imeditor-ok');
+  var editorClear = box.querySelector('.imeditor-clear');
+  var editorCancel = box.querySelector('.imeditor-cancel');
+  var editorPhoto = box.querySelector('.imeditor-photo');
+  var editorFileInput = box.querySelector('.imeditor-fileinput');
+  var editorStatus = box.querySelector('.imeditor-status');
+  var selectedChar = chars.length ? chars[0].name : '';
+  var currentKind = '';
+  function currentKey(){
+    if (currentKind === 'bg') return 'background';
+    return currentKind + '_' + normName(selectedChar);
+  }
+  function labelFor(kind){
+    return kind === 'outfit' ? '👕 Одежда' : kind === 'hair' ? '💇 Причёска' : '🖼 Фон';
+  }
+  function updateLabel(){
+    editorLabel.textContent = labelFor(currentKind) + (currentKind !== 'bg' && selectedChar ? ' — ' + selectedChar : '');
+  }
+  function showStatus(msg){
+    editorStatus.style.display = 'block';
+    editorStatus.textContent = msg;
+  }
+  function hideStatus(){
+    editorStatus.style.display = 'none';
+    editorStatus.textContent = '';
+  }
+  function renderChars(){
+    if (chars.length < 2) { editorChars.style.display = 'none'; editorChars.innerHTML = ''; return; }
+    editorChars.style.display = 'flex';
+    editorChars.innerHTML = '';
+    chars.forEach(function(c){
+      var chip = document.createElement('div');
+      chip.textContent = c.name;
+      var active = normName(c.name) === normName(selectedChar);
+      chip.style.cssText = 'padding:5px 10px;border-radius:8px;font-size:11px;cursor:pointer;border:1px solid ' + (active ? '#a855f7' : '${th.actBorder}') + ';background:${th.actBg};color:${th.actText};opacity:' + (active ? '1' : '0.55') + ';';
+      chip.onclick = function(){
+        selectedChar = c.name;
+        updateLabel();
+        renderChars();
+        loadSlot(currentKey()).then(function(v){ editorInput.value = v; });
+      };
+      editorChars.appendChild(chip);
+    });
+  }
+  function openEditor(kind){
+    currentKind = kind;
+    updateLabel();
+    hideStatus();
+    editorInput.placeholder = kind === 'bg' ? 'например: night rooftop bar' : 'например: leather jacket, jeans';
+    renderChars();
+    editorInput.value = '';
+    loadSlot(currentKey()).then(function(v){ editorInput.value = v; });
+    actRow.style.display = 'none';
+    editor.style.display = 'block';
+    editorInput.focus();
+  }
+  function closeEditor(){
+    editor.style.display = 'none';
+    actRow.style.display = 'grid';
+    hideStatus();
+  }
+  var outfitBtn = box.querySelector('.imoutfit');
+  if (outfitBtn) outfitBtn.onclick = function(){ openEditor('outfit'); };
+  var bgBtn = box.querySelector('.imbg');
+  if (bgBtn) bgBtn.onclick = function(){ openEditor('bg'); };
+  var hairBtn = box.querySelector('.imhair');
+  if (hairBtn) hairBtn.onclick = function(){ openEditor('hair'); };
+  if (editorOk) editorOk.onclick = function(){
+    var v = editorInput.value.trim();
+    if (v) saveSlot(currentKey(), v); else deleteSlot(currentKey());
+    showStatus('✓ сохранено — не забудь нажать 🔄 Реролл');
+    setTimeout(closeEditor, 1400);
+  };
+  if (editorClear) editorClear.onclick = function(){
+    deleteSlot(currentKey());
+    editorInput.value = '';
+    showStatus('↺ сброшено — не забудь нажать 🔄 Реролл');
+    setTimeout(closeEditor, 1400);
+  };
+  if (editorCancel) editorCancel.onclick = closeEditor;
+  if (editorPhoto) editorPhoto.onclick = function(){
+    if (editorFileInput) { editorFileInput.value = ''; editorFileInput.click(); }
+  };
+  if (editorFileInput) editorFileInput.onchange = function(){
+    var file = this.files && this.files[0];
+    if (!file) return;
+    var targetKey = currentKey();
+    var targetKind = currentKind;
+    showStatus('📤 сжимаю и отправляю…');
+    compressImage(file, function(b64){
+      if (!b64) { showStatus('⚠️ не смог обработать фото'); return; }
+      fetch('https://vision-proxy-tavo.vercel.app/api/describe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: TAVO_DATA, image: b64, type: targetKind })
+      }).then(function(r){ return r.text(); }).then(function(txt){
+        txt = (txt || '').trim();
+        if (txt) {
+          saveSlot(targetKey, txt);
+          if (currentKey() === targetKey) editorInput.value = txt;
+          showStatus('✓ сохранено по фото — не забудь нажать 🔄 Реролл');
+          setTimeout(closeEditor, 1600);
+        } else {
+          showStatus('⚠️ не удалось распознать, попробуй ещё раз или впиши текстом');
+        }
+      }).catch(function(e){
+        showStatus('⚠️ ошибка: ' + (e && e.message ? e.message : e));
+      });
+    });
+  };
+  var tg = box.querySelector('.imtoggle');
+  var acts = box.querySelector('.imactions');
+  if (tg && acts) {
+    tg.onclick = function(){
+      var open = acts.style.display !== 'none';
+      acts.style.display = open ? 'none' : 'block';
+      tg.style.transform = open ? 'none' : 'rotate(180deg)';
+    };
+  }
+})();
+<` + `/script>`;
+
+  // ── РЕГЕКС №2: команды [OUTFIT Имя: ...] / [HAIR Имя: ...] / [BG: ...] ──
+  // Ловит команду в тексте модели, сохраняет в tavo.file, показывает малозаметную плашку вместо неё.
+  const cmdRegexHtml = `<span class="tvcmd" data-cmd="$1" style="display:inline-block;font-size:11px;font-style:italic;color:#9d8fc4;opacity:0.85;">…</span>
+<` + `script>
+(function(){
+  var els = document.querySelectorAll('span.tvcmd');
+  var el = els[els.length-1];
+  if (!el || el.dataset.cmdDone) return;
+  el.dataset.cmdDone = '1';
+  var raw = el.getAttribute('data-cmd') || '';
+  function norm(s){ return (s||'').trim().toLowerCase(); }
+  function save(key, val){ try{ if (window.tavo && tavo.file && typeof tavo.file.save==='function') tavo.file.save(key, val); }catch(e){} }
+  function del(key){ try{ if (window.tavo && tavo.file && typeof tavo.file.delete==='function') tavo.file.delete(key); }catch(e){} }
+  var m;
+  if (/^OUTFIT\\s+/i.test(raw)) {
+    m = raw.match(/^OUTFIT\\s+([^:]+):\\s*([\\s\\S]*)$/i);
+    if (m) {
+      var name = m[1].trim(), val = m[2].trim(), isReset = norm(val)==='reset';
+      if (isReset) del('outfit_'+norm(name)); else save('outfit_'+norm(name), val);
+      el.textContent = '✓ одежда — ' + name + (isReset ? ' (сброс)' : '');
+    }
+  } else if (/^HAIR\\s+/i.test(raw)) {
+    m = raw.match(/^HAIR\\s+([^:]+):\\s*([\\s\\S]*)$/i);
+    if (m) {
+      var name2 = m[1].trim(), val2 = m[2].trim(), isReset2 = norm(val2)==='reset';
+      if (isReset2) del('hair_'+norm(name2)); else save('hair_'+norm(name2), val2);
+      el.textContent = '✓ причёска — ' + name2 + (isReset2 ? ' (сброс)' : '');
+    }
+  } else if (/^BG:/i.test(raw)) {
+    m = raw.match(/^BG:\\s*([\\s\\S]*)$/i);
+    if (m) {
+      var val3 = m[1].trim(), isReset3 = norm(val3)==='reset';
+      if (isReset3) del('background'); else save('background', val3);
+      el.textContent = '✓ фон' + (isReset3 ? ' (сброс)' : '');
+    }
+  } else {
+    el.textContent = '';
+  }
+})();
+<` + `/script>`;
+
+  const cmdRegexObj = {
+    id: crypto.randomUUID ? crypto.randomUUID() : 'cmd-'+Date.now(),
+    scriptName: 'ImageGen — команды (Outfit/Hair/BG)',
+    findRegex: '\\[(OUTFIT\\s+[^:\\]]+:[^\\]]*|HAIR\\s+[^:\\]]+:[^\\]]*|BG:[^\\]]*)\\]',
+    replaceString: cmdRegexHtml,
+    trimStrings: [], placement: [2], disabled: false,
+    markdownOnly: true, promptOnly: false, runOnEdit: false,
+    substituteRegex: 0, minDepth: null, maxDepth: null
+  };
+
+  const regexObj = {
+    id: crypto.randomUUID ? crypto.randomUUID() : 'img-'+Date.now(),
+    scriptName: 'ImageGen ('+(isRift?'Rift':'Link')+')',
+    findRegex: '\\[IMG\\]([\\s\\S]*?)\\[\\/IMG\\]',
+    replaceString: regexHtml,
+    trimStrings: [], placement: [2], disabled: false,
+    markdownOnly: true, promptOnly: false, runOnEdit: false,
+    substituteRegex: 0, minDepth: null, maxDepth: null
+  };
+
+  // Компактный JSON (одна строка) — как ждёт Tavo
+  state.regexJson = JSON.stringify(regexObj);
+  state.cmdRegexJson = JSON.stringify(cmdRegexObj);
+  saveSettings();
+  document.getElementById('prompt-box').textContent = prompt;
+  document.getElementById('regex-box').textContent = state.regexJson;
+  document.getElementById('cmd-regex-box').textContent = state.cmdRegexJson;
+  document.getElementById('copy-btn').style.display = 'block';
+  document.getElementById('copy-regex-btn').style.display = 'block';
+  document.getElementById('download-regex-btn').style.display = 'block';
+  document.getElementById('copy-cmd-regex-btn').style.display = 'block';
+  document.getElementById('download-cmd-regex-btn').style.display = 'block';
+  document.getElementById('download-both-zip-btn').style.display = 'block';
+  goToStep(4);
+}
+
+function switchOut(which) {
+  document.getElementById('out-prompt').style.display = which==='prompt' ? 'block' : 'none';
+  document.getElementById('out-regex').style.display = which==='regex' ? 'block' : 'none';
+  document.getElementById('out-cmdregex').style.display = which==='cmdregex' ? 'block' : 'none';
+  document.getElementById('tab-prompt').classList.toggle('active', which==='prompt');
+  document.getElementById('tab-regex').classList.toggle('active', which==='regex');
+  document.getElementById('tab-cmdregex').classList.toggle('active', which==='cmdregex');
+}
+
+function copyRegex() {
+  const text = document.getElementById('regex-box').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-regex-btn');
+    btn.textContent = '✓ Скопировано!';
+    setTimeout(() => btn.textContent = '📋 Скопировать регекс', 2000);
+  });
+}
+
+function copyCmdRegex() {
+  const text = document.getElementById('cmd-regex-box').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-cmd-regex-btn');
+    btn.textContent = '✓ Скопировано!';
+    setTimeout(() => btn.textContent = '📋 Или скопировать текст', 2000);
+  });
+}
+
+function downloadRegex() {
+  var blob = new Blob([state.regexJson || ''], {type:'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  var prov = state.provider === 'rift' ? 'rift' : 'link';
+  a.download = 'tavo_imagegen_' + prov + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+}
+
+function downloadCmdRegex() {
+  var blob = new Blob([state.cmdRegexJson || ''], {type:'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  var prov = state.provider === 'rift' ? 'rift' : 'link';
+  a.download = 'tavo_imagegen_commands_' + prov + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+}
+
+function downloadBothZip() {
+  if (!state.regexJson || !state.cmdRegexJson) return;
+  if (typeof JSZip === 'undefined') {
+    alert('Не удалось загрузить библиотеку архивации (JSZip). Проверь интернет-соединение и попробуй ещё раз, либо скачай оба .json по отдельности.');
+    return;
+  }
+  var btn = document.getElementById('download-both-zip-btn');
+  var origText = btn ? btn.textContent : '';
+  if (btn) btn.textContent = '⏳ собираю архив…';
+  var zip = new JSZip();
+  zip.file('imagegen.json', state.regexJson);
+  zip.file('imagegen_commands.json', state.cmdRegexJson);
+  zip.generateAsync({type:'blob'}).then(function(blob){
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    var prov = state.provider === 'rift' ? 'rift' : 'link';
+    a.download = 'tavo_imagegen_regex_' + prov + '.zip';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+    if (btn) btn.textContent = origText;
+  }).catch(function(e){
+    if (btn) btn.textContent = origText;
+    alert('Не удалось собрать zip: ' + (e && e.message ? e.message : e));
+  });
+}
+
+function copyPrompt() {
+  const text = document.getElementById('prompt-box').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = '✓ Скопировано!';
+    setTimeout(() => btn.textContent = '📋 Скопировать промт', 2000);
+  });
+}
+function goToStep(n) {
+  state.currentStep = n;
+  for (let i=1;i<=4;i++) {
+    const card = document.getElementById('card-'+i);
+    const step = document.getElementById('step-'+i);
+    if (i < n) {
+      card.style.opacity='1'; card.style.pointerEvents='auto';
+      step.className='step done';
+      step.querySelector('.step-dot').textContent='✓';
+    } else if (i === n) {
+      card.style.opacity='1'; card.style.pointerEvents='auto';
+      card.classList.add('active');
+      step.className='step active';
+      card.scrollIntoView({behavior:'smooth',block:'start'});
+    } else {
+      card.style.opacity='0.4'; card.style.pointerEvents='none';
+      card.classList.remove('active');
+      if (step.className !== 'step done') step.className='step';
+    }
+  }
+}
+function resetAll() {
+  try { localStorage.removeItem(SAVE_KEY); } catch(e){}
+  var rn=document.getElementById('restore-note'); if(rn)rn.style.display='none';
+  state.encryptedData=''; state.refs=[]; state.currentStep=1;
+  document.getElementById('api-key').value='';
+  document.getElementById('imgbb-key').value='';
+  document.getElementById('enc-badge').style.display='none';
+  document.getElementById('refs-list').innerHTML='';
+  document.getElementById('refs-next').style.display='none';
+  document.getElementById('name-field').style.display='none';
+  document.getElementById('user-id').value='';
+  document.getElementById('prompt-box').textContent='Заполни шаги 1–3';
+  document.getElementById('regex-box').textContent='Заполни шаги 1–3';
+  var crb=document.getElementById('cmd-regex-box'); if(crb)crb.textContent='Заполни шаги 1–3';
+  document.getElementById('copy-btn').style.display='none';
+  document.getElementById('copy-regex-btn').style.display='none';
+  var ccrb=document.getElementById('copy-cmd-regex-btn'); if(ccrb)ccrb.style.display='none';
+  var dcrb=document.getElementById('download-cmd-regex-btn'); if(dcrb)dcrb.style.display='none';
+  var drb=document.getElementById('download-regex-btn'); if(drb)drb.style.display='none';
+  var dbz=document.getElementById('download-both-zip-btn'); if(dbz)dbz.style.display='none';
+  var ru=document.getElementById('ref-url'); if(ru)ru.value='';
+  var run=document.getElementById('ref-url-name'); if(run)run.value='';
+  state.regexJson='';
+  state.cmdRegexJson='';
+  if(typeof switchOut==='function') switchOut('prompt');
+  goToStep(1);
+}
+
+// ── Темы рамки картинки (зашиваются в CSS регекса) ──
+var FRAME_THEMES = {
+  dark: {
+    cardBg:'linear-gradient(160deg,rgba(18,18,18,0.96),rgba(10,10,10,0.96))',
+    cardBorder:'1px solid rgba(168,85,247,0.12)',
+    cardShadow:'0 12px 32px rgba(0,0,0,0.65)',
+    cardExtra:'',
+    imgBg:'#0f0a14', loadText:'#9d8fc4', caption:'#9d8fc4', arrow:'#9d8fc4', err:'#ec4899',
+    rerollBg:'rgba(236,72,153,0.08)', rerollBorder:'rgba(236,72,153,0.18)', rerollText:'#f5a8d0',
+    actBg:'rgba(168,85,247,0.08)', actBorder:'rgba(168,85,247,0.18)', actText:'#c9a8f5',
+    inputBg:'#1a1824', inputBorder:'rgba(168,85,247,0.30)', inputText:'#f0e6ff', inputPh:'#5a4f72',
+    okBg:'rgba(52,211,153,0.12)', okBorder:'rgba(52,211,153,0.3)', okText:'#6ee7b7'
+  },
+  white: {
+    cardBg:'linear-gradient(160deg,rgba(255,255,255,0.98),rgba(247,242,251,0.98))',
+    cardBorder:'1px solid rgba(168,85,247,0.20)',
+    cardShadow:'0 12px 32px rgba(90,50,130,0.15)',
+    cardExtra:'',
+    imgBg:'#f2ecfa', loadText:'#7a5f9c', caption:'#5b4a72', arrow:'#8f74b5', err:'#d6317f',
+    rerollBg:'rgba(236,72,153,0.10)', rerollBorder:'rgba(236,72,153,0.30)', rerollText:'#c72a76',
+    actBg:'rgba(168,85,247,0.10)', actBorder:'rgba(168,85,247,0.30)', actText:'#8332c9',
+    inputBg:'#f7f2fb', inputBorder:'rgba(168,85,247,0.35)', inputText:'#2a1f3d', inputPh:'#a596c2',
+    okBg:'rgba(16,163,110,0.10)', okBorder:'rgba(16,163,110,0.35)', okText:'#0e8f5f'
+  },
+  glass: {
+    cardBg:'rgba(255,255,255,0.10)',
+    cardBorder:'1px solid rgba(255,255,255,0.18)',
+    cardShadow:'0 12px 40px rgba(0,0,0,0.35)',
+    cardExtra:'backdrop-filter:blur(30px) saturate(140%);-webkit-backdrop-filter:blur(30px) saturate(140%);',
+    imgBg:'rgba(255,255,255,0.06)', loadText:'#e6dbfb', caption:'#ece2ff', arrow:'#ded0f5', err:'#ff9ecb',
+    rerollBg:'rgba(255,255,255,0.10)', rerollBorder:'rgba(255,255,255,0.25)', rerollText:'#ffd9ec',
+    actBg:'rgba(255,255,255,0.10)', actBorder:'rgba(255,255,255,0.22)', actText:'#ece0ff',
+    inputBg:'rgba(255,255,255,0.12)', inputBorder:'rgba(255,255,255,0.30)', inputText:'#f5eeff', inputPh:'#cfc0e8',
+    okBg:'rgba(110,231,183,0.14)', okBorder:'rgba(110,231,183,0.35)', okText:'#a6f5d6'
+  }
+};
+function selectTheme(t){
+  if(!FRAME_THEMES[t]) t='dark';
+  state.frameTheme = t;
+  ['dark','white','glass'].forEach(function(x){
+    var el=document.getElementById('theme-'+x);
+    if(el) el.classList.toggle('active', x===t);
+  });
+}
+
+// ── Модели по провайдерам (только названия) ──
+var MODELS = {
+  link: [
+    {g:'Google', items:['gemini-3.1-flash-image-preview','gemini-3-pro-image-preview','gemini-3-pro-image','gemini-2.5-flash-image','pro/gemini-3.1-flash-image-preview','pro/gemini-3-pro-image-preview','pro/gemini-2.5-flash-image']},
+    {g:'OpenAI', items:['gpt-image-2','gpt-image-2-c','gpt-image-1.5','gpt-image-1']},
+  ],
+  rift: [
+    {g:'Google', items:['gemini-3.1-flash-image-preview','gemini-3-pro-image-preview','gemini-2.5-flash-image']},
+    {g:'OpenAI', items:['gpt-image-2','gpt-image-1.5','gpt-image-1','gpt-image-1-mini']},
+  ]
+};
+function renderModels() {
+  var sel = document.getElementById('model-sel');
+  var groups = MODELS[state.provider] || MODELS.link;
+  var html = '';
+  groups.forEach(function(grp){
+    html += '<optgroup label="'+grp.g+'">';
+    grp.items.forEach(function(v){ html += '<option value="'+v+'">'+v+'</option>'; });
+    html += '</optgroup>';
+  });
+  sel.innerHTML = html;
+}
+
+// ── Стили с поиском ──
+var STYLE_GROUPS = {"Живопись": {"monet": "Моне", "manet": "Мане", "van_gogh": "Ван Гог", "serov": "Серов", "rembrandt": "Рембрандт", "repin": "Репин", "klimt": "Климт", "art_nouveau": "Модерн", "bilibin_v3": "Билибин", "hokusai": "Хокусай", "japanese_watercolor": "Японская акварель", "caravaggio": "Караваджо", "alex_ross": "Алекс Росс", "guweiz": "GUWEIZ", "luminist_oil": "Люминизм", "pre_raphaelite": "Прерафаэлиты", "takehiko_inoue": "Такехико Иноуэ", "karl_bryullov": "Брюллов", "charcoal_portrait": "Угольный портрет", "dry_pastel": "Сухая пастель", "malcolm_liepke": "Малкольм Липке", "rococo": "Рококо", "andrei_rublev_russian_icon": "Икона (Рублёв)", "john_singer_sargent": "Сарджент", "egon_schiele": "Эгон Шиле", "soft_oil_pastel": "Масляная пастель", "viktor_vasnetsov": "Васнецов", "mikhail_vrubel": "Врубель", "watercolor": "Акварель"}, "Иллюстрация": {"semi_real_roulette": "Полуреализм-рулетка", "artgerm": "Artgerm", "charlie_bowater": "Чарли Боуотер", "cinematic_manhwa": "Киноманхва", "moebius": "Мёбиус", "ross_tran": "Ross Tran", "vofan": "VOFAN", "wlop": "WLOP", "yoshitaka_amano": "Ёситака Амано", "ilya_kuvshinov": "Илья Кувшинов", "mike_mignola": "Майк Миньола", "pascal_campion": "Паскаль Кампион", "persian_miniature": "Персидская миниатюра", "russian_collectible_book": "Подарочная книга", "russian_fairy_tale_book_illustration": "Русская сказка", "scrapbook_punk_zine_photomontage": "Панк-зин коллаж", "scrapbook_semireal": "Скрапбук полуреал", "stained_glass_window": "Витраж"}, "Фэнтези и хоррор": {"dark_fantasy": "Тёмное фэнтези", "classic_fantasy": "Классическое фэнтези", "horror_illustration": "Хоррор", "witch": "Ведьма", "tim_burton_2d": "Тим Бёртон 2D", "tim_burton_stopmotion": "Тим Бёртон stop-motion"}, "Кино": {"cinematic_realism": "Кинореализм", "cinematic_art": "Кино-арт", "film_noir": "Нуар", "sin_city": "Sin City", "spider_verse": "Spider-Verse", "arcane_v4": "Аркейн", "stop_motion_puppet": "Кукольный stop-motion", "tarkovsky_kalatozov": "Тарковский / Калатозов", "wes_anderson": "Уэс Андерсон"}, "Игры": {"oldschool_lowpoly": "Old-school low-poly", "skyrim": "Skyrim", "baldurs_gate_3": "Baldur's Gate 3", "stalker": "STALKER", "minecraft": "Minecraft", "mmo_2000s": "MMO 2000-х", "stardew_valley": "Stardew Valley", "genshin_impact": "Genshin Impact", "borderlands": "Borderlands", "point_and_click": "Point-and-click", "matt_rhodes_bioware": "BioWare", "cyberpunk_2077_photo_mode": "Cyberpunk фото", "cyberpunk_2077_screenshot": "Cyberpunk скриншот", "fallout_4_photo_mode": "Fallout 4 фото", "fallout_4_screenshot": "Fallout 4 скриншот", "gta_san_andreas": "GTA San Andreas", "vtmb_bloodlines": "Vampire Bloodlines", "league_of_legends_splash": "LoL splash", "bloodborne_elden_ring": "Bloodborne / Elden Ring", "hand_painted_key_art": "Key-art живопись", "hotline_miami": "Hotline Miami", "infinity_nikki": "Infinity Nikki", "life_is_strange_like": "Life is Strange", "neon_comic": "Неон-комикс", "overwatch": "Overwatch", "silent_hill_2": "Silent Hill 2", "world_of_horror": "World of Horror"}, "Мультсериалы": {"adventure_time": "Время приключений", "star_vs_evil": "Star vs Forces of Evil", "rick_and_morty": "Рик и Морти", "steven_universe": "Вселенная Стивена", "winx_club": "Winx", "bratz": "Bratz", "avatar_the_last_airbender": "Аватар", "cartoon_network": "Cartoon Network", "disney_renaissance": "Disney ренессанс", "klaus": "Клаус", "wolfwalkers": "Wolfwalkers", "yuri_norshtein": "Юрий Норштейн"}, "Аниме и манга": {"anime_still": "Аниме-кадр", "visual_novel": "Визуальная новелла", "fourth_wall": "Fourth Wall", "manhwa": "Манхва", "chibi_manhwa": "Чиби-манхва", "manga_bw": "Манга ч/б", "studio_ghibli": "Studio Ghibli", "kyoto_animation": "Kyoto Animation", "makoto_shinkai": "Макото Синкай", "retro_shoujo": "Ретро-сёдзё", "ufotable": "Ufotable", "80s_anime": "Аниме 80-х", "clamp": "CLAMP", "cowboy_bebop": "Cowboy Bebop", "vampire_hunter_d": "Vampire Hunter D", "gachiakuta": "Gachiakuta", "hellsing_ultimate": "Hellsing", "inio_asano": "Инио Асано", "junji_ito": "Дзюндзи Ито", "junji_ito_manga_page": "Дзюндзи Ито (страница)", "kawaii": "Кавайи", "persona_5": "Persona 5", "persona_5_no_text": "Persona 5 (без текста)", "trigger": "Trigger"}, "Графика и постеры": {"sketch": "Скетч", "linocut": "Линогравюра", "pop_art": "Поп-арт", "soviet_mosaic": "Советская мозаика", "soviet_poster": "Советский плакат", "pin_up": "Pin-up"}, "Плёночное фото": {"webcam_candid": "Вебкам", "cinestill_800t": "CineStill 800T", "kodak_portra_400": "Kodak Portra 400", "fujifilm_pro_400h": "Fujifilm Pro 400H", "fujifilm_velvia_50": "Fujifilm Velvia 50", "lomography_cross_process": "Lomography", "disposable_camera": "Одноразовая камера", "nan_goldin": "Нэн Голдин", "peter_lindbergh": "Питер Линдберг", "annie_leibovitz": "Энни Лейбовиц", "helmut_newton": "Хельмут Ньютон", "national_geographic": "National Geographic", "vivian_maier": "Вивиан Майер", "polaroid_sx_70": "Polaroid SX-70", "vhs_camcorder": "VHS-камера", "kodak_tri_x_400_ilford_hp5": "Kodak Tri-X / Ilford", "y2k_cellphone": "Y2K-телефон", "bjd_doll": "BJD-кукла"}};
+var styleListOpen = false;
+function renderStyleList(filter){
+  filter = filter || '';
+  var dd = document.getElementById('style-dropdown');
+  var f = filter.toLowerCase().trim();
+  var html = '';
+  for (var cat in STYLE_GROUPS) {
+    var items = STYLE_GROUPS[cat];
+    var matched = [];
+    for (var key in items) {
+      var label = items[key];
+      if (!f || label.toLowerCase().indexOf(f)>=0 || key.toLowerCase().indexOf(f)>=0) matched.push([key,label]);
+    }
+    if (!matched.length) continue;
+    html += '<div style="padding:6px 12px;font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);background:var(--s1);position:sticky;top:0;">'+cat+'</div>';
+    matched.forEach(function(kv){
+      html += '<div onclick="selectStyle(\''+kv[0]+'\',\''+kv[1].replace(/'/g,"\\'")+'\')" style="padding:9px 12px;font-size:13px;color:var(--text);cursor:pointer;border-bottom:1px solid var(--border);" onmouseover="this.style.background=\'var(--purple-dim)\'" onmouseout="this.style.background=\'transparent\'">'+kv[1]+' <span style="color:var(--text3);font-size:10px;">'+kv[0]+'</span></div>';
+    });
+  }
+  if (!html) html = '<div style="padding:16px;text-align:center;color:var(--text3);font-size:12px;">ничего не найдено</div>';
+  dd.innerHTML = html;
+}
+function openStyleList(){ document.getElementById('style-dropdown').style.display='block'; styleListOpen=true; renderStyleList(); }
+function filterStyles(){ if(!styleListOpen) openStyleList(); renderStyleList(document.getElementById('style-search').value); }
+function selectStyle(key,label){
+  document.getElementById('style-sel').value=key;
+  document.getElementById('style-search').value=label;
+  document.getElementById('style-dropdown').style.display='none';
+  styleListOpen=false;
+}
+document.addEventListener('click',function(e){
+  var w=document.getElementById('style-search'), dd=document.getElementById('style-dropdown');
+  if(w&&dd&&!w.contains(e.target)&&!dd.contains(e.target)){ dd.style.display='none'; styleListOpen=false; }
+});
+document.getElementById('style-search').value='Kodak Portra 400';
+renderModels();
+
+// ── Сохранение настроек (всё кроме DATA), на 24 часа ──
+var SAVE_KEY = 'tavo_setup_v1';
+var SAVE_TTL = 24*60*60*1000; // сутки
+function saveSettings(){
+  try {
+    var data = {
+      ts: Date.now(),
+      provider: state.provider,
+      refs: state.refs,
+      style: document.getElementById('style-sel').value,
+      styleLabel: document.getElementById('style-search').value,
+      model: document.getElementById('model-sel').value,
+      userId: document.getElementById('user-id').value,
+      frameTheme: state.frameTheme
+    };
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+  } catch(e){}
+}
+function loadSettings(){
+  try {
+    var raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false;
+    var d = JSON.parse(raw);
+    if (!d.ts || Date.now()-d.ts > SAVE_TTL) { localStorage.removeItem(SAVE_KEY); return false; }
+    // провайдер
+    if (d.provider) selectProvider(d.provider);
+    // рефы
+    if (Array.isArray(d.refs) && d.refs.length){
+      state.refs = d.refs;
+      var list = document.getElementById('refs-list');
+      list.innerHTML = '';
+      d.refs.forEach(function(r){
+        var id = 'ref-'+Math.random().toString(36).slice(2);
+        list.insertAdjacentHTML('beforeend',
+          '<div class="ref-card" id="'+id+'"><img class="ref-thumb" src="'+r.url+'" onerror="this.style.background=\'var(--s3)\'"><div class="ref-info"><div class="ref-name">'+r.name+'</div><div class="ref-url">✓ '+r.url.replace('https://','').slice(0,40)+'…</div></div><div class="ref-actions"><button class="ref-btn del" onclick="removeRef(\''+id+'\',\''+r.name.replace(/'/g,"\\'")+'\')">✕</button></div></div>');
+      });
+      document.getElementById('refs-next').style.display='block';
+    }
+    // модель (после renderModels)
+    if (d.model){ var ms=document.getElementById('model-sel'); if(ms) ms.value=d.model; }
+    // стиль
+    if (d.style){ document.getElementById('style-sel').value=d.style; document.getElementById('style-search').value=d.styleLabel||d.style; }
+    // userId
+    if (d.userId) document.getElementById('user-id').value=d.userId;
+    // тема рамки
+    if (d.frameTheme) selectTheme(d.frameTheme);
+    return true;
+  } catch(e){ return false; }
+}
+
+// ── Кнопка «Изменить»: переход к нужному блоку без сброса ──
+function quickEdit(){
+  var sel = document.getElementById('quick-edit-sel');
+  var v = sel.value;
+  sel.value = '';
+  if (v==='provider'||v==='keys') goToStep(1);
+  else if (v==='refs') goToStep(2);
+  else if (v==='style'||v==='model'||v==='userId'||v==='theme') goToStep(3);
+  // подсветим нужное поле
+  setTimeout(function(){
+    var map={style:'style-search',model:'model-sel',userId:'user-id',keys:'api-key'};
+    var el = map[v] && document.getElementById(map[v]);
+    if(el){ el.focus(); el.scrollIntoView({behavior:'smooth',block:'center'}); }
+  }, 400);
+}
+
+// Загружаем сохранённое при старте
+var hadSaved = loadSettings();
+if (hadSaved) {
+  // показываем заметку что данные подтянулись (кроме ключей)
+  var note = document.getElementById('restore-note');
+  if (note) note.style.display='block';
+}
+
+
+</script>
+</body>
+</html>
