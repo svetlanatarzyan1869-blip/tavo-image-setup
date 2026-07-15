@@ -193,6 +193,11 @@ input[type=file]{display:none;}
         <input class="field-input" type="password" id="imgbb-key" placeholder="Ключ ImgBB">
         <div class="field-hint">imgbb.com → Настройки → API</div>
       </div>
+      <div class="field" id="vision-key-field" style="display:block">
+        <div class="field-label">VISION_KEY (группа all / once)</div>
+        <input class="field-input" type="password" id="vision-key" placeholder="Ключ для vision-моделей">
+        <div class="field-hint">LinkAPI: image-модели — ключ группы gemini, vision-модели (описание фото, с иероглифом в имени) — ключ группы all/once. Нужен отдельный ключ.</div>
+      </div>
       <div class="enc-badge" id="enc-badge" style="display:none">
         <div class="enc-label">✓ зашифровано</div>
         <div class="enc-val" id="enc-val"></div>
@@ -366,6 +371,7 @@ function selectProvider(p) {
   document.getElementById('api-link').textContent = p==='link' ? 'linkapi.ai →' : 'riftai.su →';
   if(typeof renderModels==='function') renderModels();
   document.getElementById('api-hint').textContent = p==='link' ? 'Личный кабинет → API Keys' : 'Личный кабинет → API Keys';
+  document.getElementById('vision-key-field').style.display = p==='link' ? 'block' : 'none';
 }
 const MASTER_KEY = '+KttdSbKJxIgDorFxEf9a3eHGYuH4h/OljxbkPBG3wk=';
 async function encryptData(obj, secretKeyBase64, isRift) {
@@ -395,9 +401,12 @@ function sanitizeKey(k){
 async function encryptKeys() {
   const apiKey = sanitizeKey(document.getElementById('api-key').value.trim());
   const imgbbKey = sanitizeKey(document.getElementById('imgbb-key').value.trim());
+  const visionKey = state.provider === 'link' ? sanitizeKey(document.getElementById('vision-key').value.trim()) : '';
   if (!apiKey || !imgbbKey) { alert('Заполни оба поля'); return; }
   try {
-    const encrypted = await encryptData({key: apiKey, imgbb_key: imgbbKey}, MASTER_KEY, state.provider==='rift');
+    const payload = { key: apiKey, imgbb_key: imgbbKey };
+    if (visionKey) payload.vision_key = visionKey;
+    const encrypted = await encryptData(payload, MASTER_KEY, state.provider === 'rift');
     state.encryptedData = encrypted;
     document.getElementById('enc-val').textContent = encrypted.slice(0,60)+'…';
     document.getElementById('enc-badge').style.display = 'flex';
@@ -590,8 +599,7 @@ EXAMPLE (outfit change):
       <div class="imeditor-chars" style="display:none;flex-wrap:wrap;gap:6px;margin-bottom:8px;"></div>
       <div style="display:flex;gap:8px;">
         <input class="imeditor-input" type="text" style="flex:1;min-width:0;padding:9px 10px;border-radius:10px;border:1px solid ${th.inputBorder};background:${th.inputBg};color:${th.inputText};font-size:13px;outline:none;box-sizing:border-box;">
-        <button class="imeditor-photo" title="Заполнить по фото" style="flex-shrink:0;padding:0 14px;border-radius:10px;border:1px solid ${th.actBorder};background:${th.actBg};color:${th.actText};font-size:14px;cursor:pointer;">📎</button>
-        <input class="imeditor-fileinput" type="file" accept="image/*" style="display:none;">
+        <label class="imeditor-photo" title="Заполнить по фото" style="flex-shrink:0;padding:0 14px;border-radius:10px;border:1px solid ${th.actBorder};background:${th.actBg};color:${th.actText};font-size:14px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;position:relative;">📎<input class="imeditor-fileinput" type="file" accept="image/*" style="position:absolute;width:0;height:0;opacity:0;overflow:hidden;"></label>
       </div>
       <div class="imeditor-status" style="display:none;font-size:11px;text-align:center;margin-top:8px;color:${th.actText};"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px;">
@@ -788,9 +796,9 @@ EXAMPLE (outfit change):
     setTimeout(closeEditor, 1400);
   };
   if (editorCancel) editorCancel.onclick = closeEditor;
-  if (editorPhoto) editorPhoto.onclick = function(){
-    if (editorFileInput) { editorFileInput.value = ''; editorFileInput.click(); }
-  };
+  if (editorPhoto && editorFileInput) editorPhoto.addEventListener('click', function(){
+    editorFileInput.value = '';
+  });
   if (editorFileInput) editorFileInput.onchange = function(){
     var file = this.files && this.files[0];
     if (!file) return;
@@ -849,25 +857,21 @@ EXAMPLE (outfit change):
     if (m) {
       var name = m[1].trim(), val = m[2].trim(), isReset = norm(val)==='reset';
       if (isReset) del('outfit_'+norm(name)); else save('outfit_'+norm(name), val);
-      el.textContent = '✓ одежда — ' + name + (isReset ? ' (сброс)' : '');
     }
   } else if (/^HAIR\\s+/i.test(raw)) {
     m = raw.match(/^HAIR\\s+([^:]+):\\s*([\\s\\S]*)$/i);
     if (m) {
       var name2 = m[1].trim(), val2 = m[2].trim(), isReset2 = norm(val2)==='reset';
       if (isReset2) del('hair_'+norm(name2)); else save('hair_'+norm(name2), val2);
-      el.textContent = '✓ причёска — ' + name2 + (isReset2 ? ' (сброс)' : '');
     }
   } else if (/^BG:/i.test(raw)) {
     m = raw.match(/^BG:\\s*([\\s\\S]*)$/i);
     if (m) {
       var val3 = m[1].trim(), isReset3 = norm(val3)==='reset';
       if (isReset3) del('background'); else save('background', val3);
-      el.textContent = '✓ фон' + (isReset3 ? ' (сброс)' : '');
     }
-  } else {
-    el.textContent = '';
   }
+  if (el.parentNode) el.parentNode.removeChild(el);
 })();
 <` + `/script>`;
 
@@ -1021,6 +1025,7 @@ function resetAll() {
   state.encryptedData=''; state.refs=[]; state.currentStep=1;
   document.getElementById('api-key').value='';
   document.getElementById('imgbb-key').value='';
+  var vk=document.getElementById('vision-key'); if(vk)vk.value='';
   document.getElementById('enc-badge').style.display='none';
   document.getElementById('refs-list').innerHTML='';
   document.getElementById('refs-next').style.display='none';
